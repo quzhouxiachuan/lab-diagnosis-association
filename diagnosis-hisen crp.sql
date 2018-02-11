@@ -11,9 +11,9 @@ drop table #filter_tb
 select *  
 into #table
 from  nmh_cerner_dm.lab_result lab  
-where (event_dsc like '%creative%protein' 
-	or lab.event_cd = 39896 )    -- c-reactive protein code 
-	--	or lab.event_cd = 2307403 ) -- c-reactive protein hisens
+where (event_dsc like '%creative%protein%hisen' 
+	--or lab.event_cd = 39896 )    -- c-reactive protein code 
+		or lab.event_cd = 2307403 ) -- c-reactive protein hisens
 	-- or lab.event_cd = 7460) -- sedimentation rate 
 		and  lab.result_status_cd in ( 9,17)  -- authenticated
 		and lab.order_status_cd = 682 -- order complete
