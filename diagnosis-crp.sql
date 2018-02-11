@@ -7,6 +7,7 @@ drop table #diagnoses
 drop table #full_tb 
 drop table #final 
 drop table #final_tb 
+drop table #filter_tb 
 
 select *  
 into #table
