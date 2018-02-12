@@ -1,7 +1,8 @@
-libirary(gtools)
+library(gtools)
 library(plyr)
 setwd('/Volumes/fsmhome/projects/chi-square test/')
-x=read.csv('./chi-square dataset.csv',sep = '\t')
+x=read.table('./',sep = '\t',header= 0)
+x=read.table('./diagnosis-crp.txt',sep = '\t',header= 0)
 x= x [,1:7]
 x= x[,-c(2,5)]
 #convert continuous variable to discrete variable using quantile/quartile 
