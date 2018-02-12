@@ -134,20 +134,10 @@ plot(density(sample$result_val_num))
 sample  = x[x$vocabulary_val =='723.1',] 
 plot(density(sample$result_val_num))
 
-
-
 ggplot() + geom_density(data=sample, aes(x=result_val_num, fill='ICD782',alpha=0.5))
 
 d=ggplot() + geom_density(data= sample, aes(x=result_val_num, fill='ICD782',alpha=0.5))+ xlab('hisen-CRP value')+ylab('density') + coord_cartesian(xlim=c(0, 50))
 d+ geom_density(data= x, aes(x=result_val_num, fill='population', alpha = 0.5)) 
-
-
-
-
-
-
-
-
 
 
 
