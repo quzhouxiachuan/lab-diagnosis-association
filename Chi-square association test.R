@@ -1,11 +1,9 @@
 library(gtools)
 library(plyr)
-setwd('/Volumes/fsmhome/projects/chi-square test/')
-x=read.table('./',sep = '\t',header= 0)
-x=read.table('./diagnosis-crp.txt',sep = '\t',header= 0)
-x= x [,1:7]
-x= x[,-c(2,5)]
+setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
+x=read.csv('./diagnosis-crp.txt',header= 0)
 #convert continuous variable to discrete variable using quantile/quartile 
+
 x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
 
 #focus on diagnoses that have frequency higher than 10. 
