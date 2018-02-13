@@ -1,15 +1,24 @@
 library(gtools)
 library(plyr)
 setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
-x=read.csv('./diagnosis-crp.txt',header= 0)
+x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
+#res <- read.csv( '.csv', header=F, sep=',', dec = '.', stringsAsFactors=F , quote = "\"" )
+
+#x=read.table('./diagnosis-crp.txt',sep = '\t',header= 0)
+colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
+#convert between units if it is high sensitivity reactive protein 
+x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL','result_val_num']*10
+
+
 #convert continuous variable to discrete variable using quantile/quartile 
 
 x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
 
 #focus on diagnoses that have frequency higher than 10. 
 freq = as.data.frame(table(x$vocabulary_val))
-dx_list = freq[freq$Freq>=10,]  #change threshold as you want 
-dx_list = as.character(dx_list$Var1)
+#freq=freq[freq$Var1!='*****',]
+dx = freq[freq$Freq>=10,]  #change threshold as you want 
+dx_list = as.character(dx$Var1)
 result =  data.frame()
 i = 1
 for (voca in dx_list)
@@ -39,6 +48,15 @@ for (voca in dx_list)
   print(i)
   
 }
+
+dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
+dict = dict[!duplicated(dict$V1),]
+dict = dict[dict$V2!='',]
+final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
+final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','OR_1vs3','pval_1vs3','OR_2vs3','pval_2vs3')]
+colnames(final)[2]='icd_dsc'
+final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
+
 
 #histograms of diagnosis among different groups 
 #diagnosis  OR_1vs2 category1-2_pval category2-3_OR category2_3pval category1-3_OR  category1-3_pval
