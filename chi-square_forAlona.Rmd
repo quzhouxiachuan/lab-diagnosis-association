@@ -13,9 +13,7 @@ library(gtools)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Extract the peak value of hisensitivity c-reactive protein for each patient in EDW cerner table. Convert those who have mg/dL as measure unit to mg/l. Visualize the CRP value using histogram and boxplot.  
 
 ```{r gtools}{r plyr}
 setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
@@ -23,6 +21,7 @@ x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
 colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
 #convert between units if it is high sensitivity reactive protein 
 x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL','result_val_num']*10
+x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
 summary(x$result_val_num)
 ```
 
@@ -41,13 +40,13 @@ ggplot(x, aes(x = '', y = result_val_num)) +
   labs(title=title, x=xlab, y=ylab)+ theme(axis.text = element_text(size = 15)
   ,axis.title = element_text(size=18), plot.title = element_text(size=20,hjust=0.5))
 ```
-
+Create a factor variable using the quantiles of a continous variable.
 ```{r}
 summary(quantcut(x$result_val_num,3))
 ```
-
+Run chi-square test for each diagnosis code. Compare the odds ratio between group 2 and group1, group3 and group1. 
 ```{r code, eval = FALSE}
-x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
+
 #focus on diagnoses that have frequency higher than 10. 
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
@@ -57,7 +56,7 @@ result =  data.frame()
 i = 1
 for (voca in dx_list)
 { 
-  # voca = '216.7'
+  # voca = '250.00'
   df_case = x[x$vocabulary_val==voca,]  #select rows with dx voca 
   case_id = unique(df_case$mrd_pt_id) #find all the cases id 
   label = as.data.frame(cbind(case_id, rep('case',length(case_id))))
@@ -70,31 +69,54 @@ for (voca in dx_list)
   tb = table(df_lab$label, df_lab$val_disc) 
   res12= fisher.test(tb[,1:2]) #chi-sqaure test for more than 2 categories 
   res13= fisher.test(tb[,c(1,3)])
-  res23= fisher.test(tb[,2:3])
   result[i,'diagnosis'] = voca
   result[i, 'OR_1vs2'] = res12$estimate
   result[i, 'pval_1vs2'] = res12[1]
+  result[i, 'conf.int_1v2']=paste('[',res12$conf.int[1],',',res12$conf.int[2],']')
   result[i, 'OR_1vs3'] = res13$estimate
   result[i, 'pval_1vs3'] = res13[1]
+  result[i, 'conf.int_1v3']=paste('[',res13$conf.int[1],',',res13$conf.int[2],']')
   i = i+ 1 
   print(i)
   
 }
 ```
+Read the ICD9 dictionary to get the description of each ICD9 code. 
 ```{r}
-result = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/result/hisenCRP_diagnosis_chisquare.csv')
-kable(result[order(result$Freq, decreasing = T),][1:500,])
+dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
+dict = dict[!duplicated(dict$V1),]
+dict = dict[dict$V2!='',]
+final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
+final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','conf.int_1v2','OR_1vs3','pval_1vs3','conf.int_1v3')]
+colnames(final)[2]='icd9_dsc'
+final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
 ```
+
 ```{r}
-data=result 
-data$diagnosis = as.character(data$diagnosis)
-const1= data[data$pval_1vs2>0.05&data$pval_1vs3>0.05&data$pval_2vs3>0.05, ]
-const2= data[data$pval_1vs2<=0.05&data$pval_1vs3<=0.05&data$pval_2vs3<=0.05, ]
-list = unique(c(const1$diagnosis,const2$diagnosis))
-data_diff = data[!(data$diagnosis %in% list),]
-dim(data_diff)
-kable(data_diff[order(data_diff$Freq, decreasing = T),])
+#result = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/result/hisenCRP_diagnosis_chisquare.csv')
+kable(final1[order(final1$Freq, decreasing = T),][1:200,])
 ```
+List those who are siginificant unique to group2/1 but not to group3/1
+```{r, echo= F}
+data = final1 
+group2vs1= data[data$pval_1vs2<=0.05 & data$pval_1vs3>0.05, ]
+dim(group2vs1)
+kable(group2vs1[order(group2vs1$Freq, decreasing = T),])
+```
+List those who are significant unique to group3/1 but not 2/1 
+```{r}
+group3vs1= data[data$pval_1vs2>0.05 & data$pval_1vs3<=0.05, ]
+dim(group3vs1)
+kable(group3vs1[order(group3vs1$Freq, decreasing = T),])
+
+```
+List those who are significant in both groups 
+```{r}
+group23= data[data$pval_1vs2<=0.05 & data$pval_1vs3<=0.05, ]
+dim(group23)
+kable(group23[order(group23$Freq, decreasing = T),])
+```
+
 ```{r, echo=FALSE}
 sample= x[x$vocabulary_val =='723.1',]
 d=ggplot() + geom_density(data= sample, aes(x=result_val_num, fill='ICD723.1:Neck pain',alpha=0.5))+ xlab('hisen-CRP value')+ylab('density') + coord_cartesian(xlim=c(0, 50))
@@ -115,14 +137,6 @@ df_lab$label[is.na(df_lab$label)] <- 'ctrl'
 #rownames(tb) = c(paste('icd',voca),'control')
 kable(tb)
 ```
-```{r}
-dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
-dict = dict[!duplicated(dict$V1),]
-dict = dict[dict$V2!='',]
-final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
-final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','OR_1vs3','pval_1vs3','OR_2vs3','pval_2vs3')]
-colnames(final)[2]='icd_dsc'
-final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
-```
+
 
 
