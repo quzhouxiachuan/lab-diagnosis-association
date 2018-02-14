@@ -20,7 +20,7 @@ x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL',
 x$vocabulary_value = as.character(x$vocabulary_value)
 ```
 
-```{r pressure, echo=FALSE}
+```{r, echo=FALSE}
 title = 'Hisensitivity CRP Peak Histogram'
 xlab= 'Hisensitivity CRP value (mg/L)'
 ggplot(data=x , aes(result_val_num)) + geom_histogram(binwidth = 3,fill='darkorange',col='black') +
