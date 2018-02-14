@@ -99,9 +99,24 @@ kable(final1[order(final1$Freq, decreasing = T),][1:200,])
 List those who are siginificant unique to group2/1 but not to group3/1
 ```{r, echo= F}
 data = final1 
+data$diagnosis = as.character(data$diagnosis)
 group2vs1= data[data$pval_1vs2<=0.05 & data$pval_1vs3>0.05, ]
 dim(group2vs1)
 kable(group2vs1[order(group2vs1$Freq, decreasing = T),])
+```
+visualize the odds ratio using lolliplot order by the frequency of diagnosis 
+```{r, echo=F}
+ggplot(group2vs1[1:50,], aes(x=diagnosis, y=OR_1vs2)) + 
+  geom_point(size=3) + 
+  geom_segment(aes(x=diagnosis, 
+                   xend=diagnosis, 
+                   y=0, 
+                   yend=OR_1vs2)) + 
+  labs(title="Lollipop Chart", 
+       subtitle="hisensitivity c-reactive protein: ods ratio group2 vs group1", 
+       caption="order by the frequency of diagnosis") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+  #+ geom_errorbar(aes(ymax = , ymin = L))
 ```
 List those who are significant unique to group3/1 but not 2/1 
 ```{r}
