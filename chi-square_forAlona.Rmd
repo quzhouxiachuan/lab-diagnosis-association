@@ -1,0 +1,122 @@
+---
+title: "Hisensitivity-CRP"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(gtools)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r gtools}{r plyr}
+setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
+x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
+colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
+#convert between units if it is high sensitivity reactive protein 
+x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL','result_val_num']*10
+summary(x$result_val_num)
+```
+
+```{r pressure, echo=FALSE}
+title = 'Hisensitivity CRP Peak Histogram'
+xlab= 'Hisensitivity CRP value (mg/L)'
+ggplot(data=x , aes(result_val_num)) + geom_histogram(binwidth = 3,fill='darkorange',col='black') +
+  labs(title=title, x=xlab)+ theme(axis.text = element_text(size = 15)
+   ,axis.title = element_text(size=18), plot.title = element_text(size=20,hjust=0.5)) 
+
+title = ''
+xlab= 'Hisensitivity CRP'
+ylab = 'Hisensitivity CRP Value  (mg/L)'
+ggplot(x, aes(x = '', y = result_val_num)) +
+  geom_boxplot(fill = 'darkorange', colour = 'black')  + 
+  labs(title=title, x=xlab, y=ylab)+ theme(axis.text = element_text(size = 15)
+  ,axis.title = element_text(size=18), plot.title = element_text(size=20,hjust=0.5))
+```
+
+```{r}
+summary(quantcut(x$result_val_num,3))
+```
+
+```{r code, eval = FALSE}
+x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
+#focus on diagnoses that have frequency higher than 10. 
+freq = as.data.frame(table(x$vocabulary_val))
+#freq=freq[freq$Var1!='*****',]
+dx = freq[freq$Freq>=10,]  #change threshold as you want 
+dx_list = as.character(dx$Var1)
+result =  data.frame()
+i = 1
+for (voca in dx_list)
+{ 
+  # voca = '216.7'
+  df_case = x[x$vocabulary_val==voca,]  #select rows with dx voca 
+  case_id = unique(df_case$mrd_pt_id) #find all the cases id 
+  label = as.data.frame(cbind(case_id, rep('case',length(case_id))))
+  colnames(label) = c('case_id', 'label')
+  #control_id =  setdiff(unique(x$mrd_pt_id), unique(df_case$mrd_pt_id)) #find all the control id 
+  #df_control = x[x$mrd_pt_id %in% control_id, ] # create control dataset 
+  df_lab = merge(x,label, by.x='mrd_pt_id',by.y='case_id',all.x=TRUE)
+  df_lab$label = as.character(df_lab$label)
+  df_lab$label[is.na(df_lab$label)] <- 'ctrl'
+  tb = table(df_lab$label, df_lab$val_disc) 
+  res12= fisher.test(tb[,1:2]) #chi-sqaure test for more than 2 categories 
+  res13= fisher.test(tb[,c(1,3)])
+  res23= fisher.test(tb[,2:3])
+  result[i,'diagnosis'] = voca
+  result[i, 'OR_1vs2'] = res12$estimate
+  result[i, 'pval_1vs2'] = res12[1]
+  result[i, 'OR_1vs3'] = res13$estimate
+  result[i, 'pval_1vs3'] = res13[1]
+  result[i, 'OR_2vs3'] = res23$estimate
+  result[i, 'pval_2vs3'] =  res23[1]
+  i = i+ 1 
+  print(i)
+  
+}
+```
+```{r}
+result = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/result/hisenCRP_diagnosis_chisquare.csv')
+kable(result[order(result$Freq, decreasing = T),][1:500,])
+```
+```{r}
+data=result 
+data$diagnosis = as.character(data$diagnosis)
+const1= data[data$pval_1vs2>0.05&data$pval_1vs3>0.05&data$pval_2vs3>0.05, ]
+const2= data[data$pval_1vs2<=0.05&data$pval_1vs3<=0.05&data$pval_2vs3<=0.05, ]
+list = unique(c(const1$diagnosis,const2$diagnosis))
+data_diff = data[!(data$diagnosis %in% list),]
+dim(data_diff)
+kable(data_diff[order(data_diff$Freq, decreasing = T),])
+```
+```{r, echo=FALSE}
+sample= x[x$vocabulary_val =='723.1',]
+d=ggplot() + geom_density(data= sample, aes(x=result_val_num, fill='ICD723.1:Neck pain',alpha=0.5))+ xlab('hisen-CRP value')+ylab('density') + coord_cartesian(xlim=c(0, 50))
+d+ geom_density(data= x, aes(x=result_val_num, fill='population', alpha = 0.5)) 
+```
+```{r, eval=FALSE}
+voca = '723.1'
+df_case = x[x$vocabulary_val==voca,]  #select rows with dx voca 
+case_id = unique(df_case$mrd_pt_id) #find all the cases id 
+label = as.data.frame(cbind(case_id, rep('case',length(case_id))))
+colnames(label) = c('case_id', 'label')
+#control_id =  setdiff(unique(x$mrd_pt_id), unique(df_case$mrd_pt_id)) #find all the control id 
+#df_control = x[x$mrd_pt_id %in% control_id, ] # create control dataset 
+df_lab = merge(x,label, by.x='mrd_pt_id',by.y='case_id',all.x=TRUE)
+df_lab$label = as.character(df_lab$label)
+df_lab$label[is.na(df_lab$label)] <- 'ctrl'
+#tb = table(df_lab$label, df_lab$val_disc) 
+#rownames(tb) = c(paste('icd',voca),'control')
+kable(tb)
+```
+
+
+
