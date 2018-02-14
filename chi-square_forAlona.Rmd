@@ -145,8 +145,6 @@ ggplot(group3vs1[1:40,], aes(x=diagnosis, y=OR_1vs3)) +
 kable(as.data.frame(t(group3vs1[1:40,c('diagnosis','icd9_dsc')])))
 ```
 
-
-
 ####get diagnosis that are significant in both group12, group13. 
 ```{r}
 group23= data[data$pval_1vs2<=0.05 & data$pval_1vs3<=0.05, ]
@@ -158,7 +156,7 @@ group23$diagnosis = as.character(group23$diagnosis)
 group23= group23[order(group23$Freq, decreasing = T),]
 group23$diagnosis <- factor(group23$diagnosis, levels=unique(group23$diagnosis))
 ```
-```{r}
+```{r, echo=F}
 dat_m <- melt(group2vs1, id.vars = "diagnosis",  measure.vars = c('OR_1vs2','OR_1vs3'))
  ggplot(dat_m, aes(x=diagnosis, y=value, fill=variable)) + 
     geom_bar(position=position_dodge(), aes(y=value), stat="identity",width =0.5) + 
