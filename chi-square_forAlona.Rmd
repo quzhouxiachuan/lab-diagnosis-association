@@ -115,6 +115,14 @@ df_lab$label[is.na(df_lab$label)] <- 'ctrl'
 #rownames(tb) = c(paste('icd',voca),'control')
 kable(tb)
 ```
-
+```{r}
+dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
+dict = dict[!duplicated(dict$V1),]
+dict = dict[dict$V2!='',]
+final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
+final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','OR_1vs3','pval_1vs3','OR_2vs3','pval_2vs3')]
+colnames(final)[2]='icd_dsc'
+final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
+```
 
 
