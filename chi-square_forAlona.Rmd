@@ -166,3 +166,4 @@ dat_m <- melt(group2vs1, id.vars = "diagnosis",  measure.vars = c('OR_1vs2','OR_
        subtitle="hisensitivity c-reactive protein: odds ratio group2 vs group1", 
         caption="order by the frequency of diagnosis") + 
    theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+kable(as.data.frame(t(group23[1:40,c('diagnosis','icd9_dsc')])))
