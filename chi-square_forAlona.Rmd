@@ -148,24 +148,21 @@ kable(as.data.frame(t(group3vs1[1:40,c('diagnosis','icd9_dsc')])))
 
 
 ####get diagnosis that are significant in both group12, group13. 
-```{r eval=F}
+```{r}
 group23= data[data$pval_1vs2<=0.05 & data$pval_1vs3<=0.05, ]
 dim(group23)
 ```
 Lolliplot order by Frequency, get top 50 diagnosis that are both significant in group2vs1 and group3vs1
-```{r eval=F}
+```{r}
 group23$diagnosis = as.character(group23$diagnosis)
 group23= group23[order(group23$Freq, decreasing = T),]
 group23$diagnosis <- factor(group23$diagnosis, levels=unique(group23$diagnosis))
 ```
-```{r,eval=FALSE}
-ggplot(group23[1:50,], aes(x=diagnosis, y=OR_1vs3)) + 
-  geom_point(size=3) + 
-  geom_segment(aes(x=diagnosis, 
-                   xend=diagnosis, 
-                   y=0, 
-                   yend=OR_)) + 
-  labs(title="Lollipop Chart", 
-       subtitle="hisensitivity c-reactive protein: odds ratio group23vs1", 
-       caption="order by the frequency of diagnosis") + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+```{r}
+dat_m <- melt(group2vs1, id.vars = "diagnosis",  measure.vars = c('OR_1vs2','OR_1vs3'))
+ ggplot(dat_m, aes(x=diagnosis, y=value, fill=variable)) + 
+    geom_bar(position=position_dodge(), aes(y=value), stat="identity",width =0.5) + 
+   labs(title="Lollipop Chart", 
+       subtitle="hisensitivity c-reactive protein: odds ratio group2 vs group1", 
+        caption="order by the frequency of diagnosis") + 
+   theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
