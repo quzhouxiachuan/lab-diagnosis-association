@@ -1,28 +1,23 @@
 ---
-title: "Hisensitivity-CRP"
+title: "chi-sqaure association test for Hisensitivity CRP"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-library(dplyr)
-library(knitr)
 library(gtools)
+library(ggplot2)
+library(knitr)
 ```
 
-## R Markdown
-
-Extract the peak value of hisensitivity c-reactive protein for each patient in EDW cerner table. Convert those who have mg/dL as measure unit to mg/l. Visualize the CRP value using histogram and boxplot.  
-
-```{r gtools}{r plyr}
+##read dataset 
+```{r}
 setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
 x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
 colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
 #convert between units if it is high sensitivity reactive protein 
 x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL','result_val_num']*10
-x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
-summary(x$result_val_num)
+x$vocabulary_value = as.character(x$vocabulary_value)
 ```
 
 ```{r pressure, echo=FALSE}
@@ -40,18 +35,22 @@ ggplot(x, aes(x = '', y = result_val_num)) +
   labs(title=title, x=xlab, y=ylab)+ theme(axis.text = element_text(size = 15)
   ,axis.title = element_text(size=18), plot.title = element_text(size=20,hjust=0.5))
 ```
-Create a factor variable using the quantiles of a continous variable.
+create different groups based on quantile
 ```{r}
-summary(quantcut(x$result_val_num,3))
+x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
+summary(x$result_val_num)
+head(x)
 ```
-Run chi-square test for each diagnosis code. Compare the odds ratio between group 2 and group1, group3 and group1. 
-```{r code, eval = FALSE}
-
+###Create chi-square result table 
+```{r chisquare,echo=F, results='hide',fig.keep='all'}
 #focus on diagnoses that have frequency higher than 10. 
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
 dx = freq[freq$Freq>=10,]  #change threshold as you want 
 dx_list = as.character(dx$Var1)
+#delete those starting with V 
+dx_list = dx_list[-grep("V", dx_list, perl=TRUE)]
+
 result =  data.frame()
 i = 1
 for (voca in dx_list)
@@ -72,17 +71,17 @@ for (voca in dx_list)
   result[i,'diagnosis'] = voca
   result[i, 'OR_1vs2'] = res12$estimate
   result[i, 'pval_1vs2'] = res12[1]
-  result[i, 'conf.int_1v2']=paste('[',res12$conf.int[1],',',res12$conf.int[2],']')
+  format(round(1.1234, 2), nsmall = 2)
+  result[i, 'conf.int_1v2']=paste('[',format(round(res12$conf.int[1],2),nsmall=2),',',format(round(res12$conf.int[2],2),nsmall=2),']')
   result[i, 'OR_1vs3'] = res13$estimate
   result[i, 'pval_1vs3'] = res13[1]
-  result[i, 'conf.int_1v3']=paste('[',res13$conf.int[1],',',res13$conf.int[2],']')
+  result[i, 'conf.int_1v3']=paste('[',format(round(res13$conf.int[1],2),nsmall=2),',',format(round(res13$conf.int[2],2),nsmall=2),']')
   i = i+ 1 
   print(i)
-  
 }
 ```
-Read the ICD9 dictionary to get the description of each ICD9 code. 
-```{r}
+###plot chi-square result 
+```{r pressure, echo=FALSE}
 dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
 dict = dict[!duplicated(dict$V1),]
 dict = dict[dict$V2!='',]
@@ -90,68 +89,83 @@ final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
 final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','conf.int_1v2','OR_1vs3','pval_1vs3','conf.int_1v3')]
 colnames(final)[2]='icd9_dsc'
 final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
-```
-
-```{r}
-#result = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/result/hisenCRP_diagnosis_chisquare.csv')
-kable(final1[order(final1$Freq, decreasing = T),][1:200,])
-```
-List those who are siginificant unique to group2/1 but not to group3/1
-```{r, echo= F}
 data = final1 
 data$diagnosis = as.character(data$diagnosis)
+```
+```{r}
+kable(data[order(data$Freq,decreasing=T),][1:25,])
+```
+#### get diagnosis that are significant between group1 and group 2 but not between group1 and group3. 
+```{r}
 group2vs1= data[data$pval_1vs2<=0.05 & data$pval_1vs3>0.05, ]
 dim(group2vs1)
-kable(group2vs1[order(group2vs1$Freq, decreasing = T),])
 ```
-visualize the odds ratio using lolliplot order by the frequency of diagnosis 
-```{r, echo=F}
-ggplot(group2vs1[1:50,], aes(x=diagnosis, y=OR_1vs2)) + 
+Lolliplot order by diagnosis Frequency, get top 50 diagnosis that are significant in group2vs1 and show their odds ratio 
+```{r}
+group2vs1$diagnosis = as.character(group2vs1$diagnosis)
+group2vs1= group2vs1[order(group2vs1$Freq, decreasing = T),]
+group2vs1$diagnosis <- factor(group2vs1$diagnosis, levels=unique(group2vs1$diagnosis))
+```
+```{r,echo=FALSE}
+ggplot(group2vs1[1:40,], aes(x=diagnosis, y=OR_1vs2)) + 
   geom_point(size=3) + 
   geom_segment(aes(x=diagnosis, 
                    xend=diagnosis, 
                    y=0, 
                    yend=OR_1vs2)) + 
   labs(title="Lollipop Chart", 
-       subtitle="hisensitivity c-reactive protein: ods ratio group2 vs group1", 
+       subtitle="hisensitivity c-reactive protein: odds ratio group2 vs group1", 
        caption="order by the frequency of diagnosis") + 
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
-  #+ geom_errorbar(aes(ymax = , ymin = L))
+kable(as.data.frame(t(group2vs1[1:40,c('diagnosis','icd9_dsc')])))
 ```
-List those who are significant unique to group3/1 but not 2/1 
+
+#### get diagnosis that are significant between group1 and group 3 but not between group1 and group2. 
 ```{r}
 group3vs1= data[data$pval_1vs2>0.05 & data$pval_1vs3<=0.05, ]
 dim(group3vs1)
-kable(group3vs1[order(group3vs1$Freq, decreasing = T),])
-
 ```
-List those who are significant in both groups 
+Lolliplot order by diagnosis Frequency, get top 50 diagnosis that are significant in group3vs1 and show their odds ratio 
 ```{r}
+group3vs1$diagnosis = as.character(group3vs1$diagnosis)
+group3vs1= group3vs1[order(group3vs1$Freq, decreasing = T),]
+group3vs1$diagnosis <- factor(group3vs1$diagnosis, levels=unique(group3vs1$diagnosis))
+```
+```{r,echo=FALSE}
+ggplot(group3vs1[1:40,], aes(x=diagnosis, y=OR_1vs3)) + 
+  geom_point(size=3) + 
+  geom_segment(aes(x=diagnosis, 
+                   xend=diagnosis, 
+                   y=0, 
+                   yend=OR_1vs3)) + 
+  labs(title="Lollipop Chart", 
+       subtitle="hisensitivity c-reactive protein: odds ratio group3 vs group1", 
+       caption="order by the frequency of diagnosis") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
+kable(as.data.frame(t(group3vs1[1:40,c('diagnosis','icd9_dsc')])))
+```
+
+
+
+####get diagnosis that are significant in both group12, group13. 
+```{r eval=F}
 group23= data[data$pval_1vs2<=0.05 & data$pval_1vs3<=0.05, ]
 dim(group23)
-kable(group23[order(group23$Freq, decreasing = T),])
 ```
-
-```{r, echo=FALSE}
-sample= x[x$vocabulary_val =='723.1',]
-d=ggplot() + geom_density(data= sample, aes(x=result_val_num, fill='ICD723.1:Neck pain',alpha=0.5))+ xlab('hisen-CRP value')+ylab('density') + coord_cartesian(xlim=c(0, 50))
-d+ geom_density(data= x, aes(x=result_val_num, fill='population', alpha = 0.5)) 
+Lolliplot order by Frequency, get top 50 diagnosis that are both significant in group2vs1 and group3vs1
+```{r eval=F}
+group23$diagnosis = as.character(group23$diagnosis)
+group23= group23[order(group23$Freq, decreasing = T),]
+group23$diagnosis <- factor(group23$diagnosis, levels=unique(group23$diagnosis))
 ```
-```{r, eval=FALSE}
-voca = '723.1'
-df_case = x[x$vocabulary_val==voca,]  #select rows with dx voca 
-case_id = unique(df_case$mrd_pt_id) #find all the cases id 
-label = as.data.frame(cbind(case_id, rep('case',length(case_id))))
-colnames(label) = c('case_id', 'label')
-#control_id =  setdiff(unique(x$mrd_pt_id), unique(df_case$mrd_pt_id)) #find all the control id 
-#df_control = x[x$mrd_pt_id %in% control_id, ] # create control dataset 
-df_lab = merge(x,label, by.x='mrd_pt_id',by.y='case_id',all.x=TRUE)
-df_lab$label = as.character(df_lab$label)
-df_lab$label[is.na(df_lab$label)] <- 'ctrl'
-#tb = table(df_lab$label, df_lab$val_disc) 
-#rownames(tb) = c(paste('icd',voca),'control')
-kable(tb)
-```
-
-
-
+```{r,eval=FALSE}
+ggplot(group23[1:50,], aes(x=diagnosis, y=OR_1vs3)) + 
+  geom_point(size=3) + 
+  geom_segment(aes(x=diagnosis, 
+                   xend=diagnosis, 
+                   y=0, 
+                   yend=OR_)) + 
+  labs(title="Lollipop Chart", 
+       subtitle="hisensitivity c-reactive protein: odds ratio group23vs1", 
+       caption="order by the frequency of diagnosis") + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) 
