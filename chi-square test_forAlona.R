@@ -27,6 +27,8 @@ ggplot(x, aes(x = '', y = result_val_num)) +
   
 
 x$val_disc= as.factor(as.numeric(quantcut(x$result_val_num,3)))
+# random assign cut off 
+#    x$val_disc = cut(x$result_val_num, c(0,1,3,5,10,20,30,50))
 
 #focus on diagnoses that have frequency higher than 10. 
 freq = as.data.frame(table(x$vocabulary_val))
