@@ -4,6 +4,7 @@ library(ggplot2)
 library(knitr)
 
 setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
+#in windows: setwd('P:/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data')
 x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
 colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
 #convert between units if it is high sensitivity reactive protein 
