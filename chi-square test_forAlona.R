@@ -34,7 +34,7 @@ dx = freq[freq$Freq>=10,]  #change threshold as you want
 dx_list = as.character(dx$Var1)
 #delete those starting with V 
 dx_list = dx_list[-grep("V", dx_list, perl=TRUE)]
-
+##running time: 9:16 -
 result =  data.frame()
 i = 1
 for (voca in dx_list)
