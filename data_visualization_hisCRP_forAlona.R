@@ -5,7 +5,7 @@ library(reshape2)
 library(gridExtra)
 setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
 x=read.csv('./diagnosis-hisencrp_pk.csv',header = 0 )
-colnames(x) = c('mrd_pt_id','event_cd','vocabulary_value','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
+colnames(x) = c('mrd_pt_id','event_cd','vocabulary_val','result_val_num','result_units_dsc','event_start_dt_tm','diagnosis_dt')
 #convert between units if it is high sensitivity reactive protein 
 x[x$result_units_dsc=='mg/dL','result_val_num'] = x[x$result_units_dsc=='mg/dL','result_val_num']*10
 x$vocabulary_value = as.character(x$vocabulary_value)
