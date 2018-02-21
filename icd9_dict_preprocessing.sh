@@ -6,5 +6,5 @@ cut -f 2 icd-hisenCRP.txt > file2
 sed -i -e 's/\,//g' -e "s/'//g" -e 's/\#//g'  -e 's/\"//g' -e 's/\///g' -e 's/\\//g' -e 's/\|//g' file2 
 paste -d"|" file1 file2 > icd-hisenCRP-after1.csv
 
-#delete duplicated rows 
-sort icd-hisenCRP-after1.csv | uniq > icd-hisenCRP-after.csv
+#delete duplicated rows -u: unique, -k sort by #1 field, and compare uniqueness based on #1 field. -t, seperate by |
+sort -u -t '|' -k 1,1 -s icd-CRP-after1.csv  > output_file
