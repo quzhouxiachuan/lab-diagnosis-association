@@ -59,7 +59,7 @@ from
 (
 	select lab.mrd_pt_id, event_dsc, event_cd, result_val_num, result_units_dsc, diagnosis, vocabulary_value,abs(DATEDIFF(month, lab.event_start_dt_tm, diagnosis_dts)) as date_diff ,
 	event_start_dt_tm, diagnosis_dts 
-	from #lab lab
+	from #lab_pk lab
 	inner join #diagnoses d on lab.mrd_pt_id = d.mrd_pt_id 
 )labd
 where date_diff < = 1 
