@@ -4,4 +4,7 @@ replace all the , and other special symbols. Then re-save as csv file.
 cut -f 1 icd-hisenCRP.txt > file1
 cut -f 2 icd-hisenCRP.txt > file2 
 sed -i -e 's/\,//g' -e "s/'//g" -e 's/\#//g'  -e 's/\"//g' -e 's/\///g' -e 's/\\//g' -e 's/\|//g' file2 
-paste -d"|" file1 file2 > icd-hisenCRP-after.csv
+paste -d"|" file1 file2 > icd-hisenCRP-after1.csv
+
+#delete duplicated rows 
+sort icd-hisenCRP-after1.csv | uniq > icd-hisenCRP-after.csv
