@@ -91,6 +91,9 @@ dd_plot[dd_plot$OddsRatio=='Inf','indictor'] = 3
 dd_plot= dd_plot[order(dd_plot$dx_str),]
 dd_plot$dx_str <- factor(dd_plot$dx_str, levels=unique(dd_plot$dx_str))
 
+dd_plot1= dd_plot1[order(dd_plot1$dx_str),]
+dd_plot1$dx_str <- factor(dd_plot1$dx_str, levels=unique(dd_plot1$dx_str))
+
 ##create p1, p2, which include and exclude 'Inf' value and add color 
 p1=ggplot(dd_plot[1:300,], aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(0.5, 3))
 p2=ggplot(dd_plot1[1:300,], aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(0.5, 3))
