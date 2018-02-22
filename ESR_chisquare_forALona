@@ -51,25 +51,23 @@ for (voca in dx_list)
 }
 
 ## add diagnosis descrition and frequency for each diagnosis 
-dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/icd-hisenCRP-after.txt',sep = '|',header= 0)
+dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/',sep = '|',header= 0)
 dict = dict[!duplicated(dict$V1),]
 dict = dict[dict$V2!='',]
 final = merge(result, dict, by.x= 'diagnosis', by.y='V1',all.x=T)
 #final = final[,c('diagnosis','V2','OR_1vs2','pval_1vs2','conf.int_1v2','OR_1vs3','pval_1vs3','conf.int_1v3')]
 colnames(final)[ncol(final)]='icd9_dsc'
 final1 = merge(final,freq, by.x= 'diagnosis', by.y= 'Var1',all.x=T)
-write.csv(final1,'name')
 data = final1 
 data$dx_str = data$diagnosis
 data$diagnosis = as.character(data$diagnosis)
 #data$dx_str = paste(data$diagnosis,data$icd9_dsc,sep=':')
-## get diagnosis-hisCRP matrix 
+## get esr matrix 
 ## get list of diagnosis-pval12/3/4/5/6/7 pairs that has significant p value for plot 
-df_p = data[,c('dx_str','pval_12','pval_13','pval_14','pval_15',
-               'pval_16','pval_17','pval_18')]
+df_p = data[,c('dx_str','pval_12','pval_13','pval_14','pval_15')]
 df1 = melt(df_p, value.name='p_val')
 ## OR_12: ratio1/ratio2, (1case/1control)/(2case/2control)
-df_or = data[,c('dx_str','OR_12','OR_13','OR_14','OR_15','OR_16','OR_17','pval_18')]
+df_or = data[,c('dx_str','OR_12','OR_13','OR_14','OR_15')]
 df2= melt(df_or, value.name='OddsRatio')
 
 dd = cbind(df1,df2)
@@ -88,7 +86,7 @@ dd_plot1 = dd_plot
 dd_plot1 = dd_plot1[dd_plot1$OddsRatio!='Inf',]
 
 ###dd_plot include inf value and mark it with a different indictor which will have a different color mark 
-dd_plot[dd_plot$OddsRatio=='Inf','indictor'] = 3
+dd_plot[dd_plot$OddsRatio=='Inf','indictor'] = 'zero cell ct'
 dd_plot= dd_plot[order(dd_plot$dx_str),]
 dd_plot$dx_str <- factor(dd_plot$dx_str, levels=unique(dd_plot$dx_str))
 
