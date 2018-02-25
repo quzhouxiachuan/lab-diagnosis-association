@@ -10,7 +10,7 @@ x=x[,-c(1,ncol(x))]
 colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
 x$vocabulary_val = as.character(x$vocabulary_val)
 #0-22 is normal for man, 0-29 is normal range for women. 
-x$val_disc = as.numeric(cut(x$result_val_num, c(c(0,3,5,10,20,30,50,100))))
+x$val_disc = as.numeric(cut(x$result_val_num, c(c(0,3,5,10,20,30,50,100,max(x$result_val_num)))))
 
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
