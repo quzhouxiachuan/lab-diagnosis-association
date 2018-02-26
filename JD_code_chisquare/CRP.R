@@ -92,3 +92,54 @@ for (voca in dx_list2)
   print(i)
 }
 
+
+dict1 = dict[!duplicated(dict$JD_CODE),]
+dict1 = dict[dict1$JD_CODE!='',]
+colnames(dict1)[ncol(dict1)]='icd9_dsc'
+final = merge(result, dict1, by.x= 'diagnosis', by.y='JD_CODE',all.x=T)
+data = final 
+data$dx_str = paste(data$diagnosis,data$icd9_dsc,sep=':')
+data$dx_str= strtrim(data$dx_str,rep(26,length(data$dx_str)))
+
+
+df_p = data[,c('dx_str','pval_12','pval_13','pval_14','pval_15','pval_16','pval_17','pval_18')]
+df1 = melt(df_p, value.name='p_val')
+## OR_12: ratio1/ratio2, (1case/1control)/(2case/2control)
+df_or = data[,c('dx_str','OR_12','OR_13','OR_14','OR_15','OR_16','OR_17','OR_18')]
+df2= melt(df_or, value.name='OddsRatio')
+
+dd = cbind(df1,df2)
+dd= dd[,c('dx_str','variable','p_val',"OddsRatio")]
+dd_plot = dd[dd$p_val< 0.05, ]
+#set cut-off to only show odds ratio that is high 
+dd_plot = dd_plot[dd_plot$dx_str!='0:',]
+dd_plot = dd_plot[abs(log(dd_plot$OddsRatio))>2.5,]
+## get diagnosis-hisCRP matrix plot 
+
+dd_plot$OddsRatio = as.character(dd_plot$OddsRatio)
+dd_plot$OddsRatio = as.numeric(dd_plot$OddsRatio )
+dd_plot$indictor =as.numeric(dd_plot$OddsRatio < 1)
+dd_plot[dd_plot$indictor==0,'indictor']='decrease_risk'
+dd_plot[dd_plot$indictor==1,'indictor']='increase_risk'
+#################################
+#################################
+#############################
+library(ggplot2)
+
+###dd_plot1 dropped icd with Inf value which means 0 cell counts in that category 
+dd_plot1 = dd_plot
+dd_plot1 = dd_plot1[dd_plot1$OddsRatio!='Inf',]
+
+###dd_plot include inf value and mark it with a different indictor which will have a different color mark 
+dd_plot[dd_plot$OddsRatio=='Inf','indictor'] = 'zero cell count'
+dd_plot= dd_plot[order(dd_plot$dx_str),]
+dd_plot$dx_str <- factor(dd_plot$dx_str, levels=unique(dd_plot$dx_str))
+
+dd_plot1= dd_plot1[order(dd_plot1$dx_str),]
+dd_plot1$dx_str <- factor(dd_plot1$dx_str, levels=unique(dd_plot1$dx_str))
+
+
+##create p1, p2, which include and exclude 'Inf' value and add color 
+p2=ggplot(dd_plot1, aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(1, 4.2))
+#grid.arrange(p1, p2, nrow = 1)
+p2
