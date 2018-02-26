@@ -10,7 +10,7 @@ x=x[,-c(1,ncol(x))]
 colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
 x$vocabulary_val = as.character(x$vocabulary_val)
 #0-22 is normal for man, 0-29 is normal range for women. 
-x$val_disc = as.numeric(cut(x$result_val_num, c(c(0,3,5,10,20,30,50,100,max(x$result_val_num)))))
+x$val_disc = as.numeric(cut(x$result_val_num, c(0,3,5,10,20,30,50,100,max(x$result_val_num))))
 
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
@@ -98,5 +98,4 @@ p1=ggplot(dd_plot[1:300,], aes(x = variable, y = as.factor(dx_str),color=as.fact
 p2=ggplot(dd_plot1[1:300,], aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(0.5, 3))
 #grid.arrange(p1, p2, nrow = 1)
 p1 
-##arrange p1 and p2 and p3 and p4 
 
