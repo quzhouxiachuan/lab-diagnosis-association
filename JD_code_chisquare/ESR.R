@@ -1,4 +1,5 @@
 library(gtools)
+library(gtools)
 library(ggplot2)
 library(knitr)
 library(reshape2)
@@ -10,7 +11,10 @@ x=x[,-c(1,ncol(x))]
 colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
 x$vocabulary_val = as.character(x$vocabulary_val)
 #0-22 is normal for man, 0-29 is normal range for women. 
-x$val_disc = as.numeric(cut(x$result_val_num, c(0,3,5,10,20,30,50,100,max(x$result_val_num))))
+x$val_disc = as.numeric(cut(x$result_val_num, c(-1,30,50,90,130,max(x$result_val_num))))
+colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
+x$vocabulary_val = as.character(x$vocabulary_val)
+#0-22 is normal for man, 0-29 is normal range for women. 
 phewas = read.csv('/Volumes/fsmhome/projects/ICD-2-phewas.csv')
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
@@ -40,8 +44,8 @@ trunc_icd = function(dx_list){ #dx_list is a vector, sample: dx_list$dx_list
 }
 return (dx)
 }
-
-dx_list1 = cbind(dx_list$dx_list,dx)
+dx= trunc_icd(dx_list$dx_list)
+dx_list1 = cbind(as.character(dx_list$dx_list),dx)
 colnames(dx_list1)[1] = 'original_dx'
 
 #clean phewas mapping table 
@@ -99,7 +103,7 @@ colnames(dict1)[ncol(dict1)]='icd9_dsc'
 final = merge(result, dict1, by.x= 'diagnosis', by.y='JD_CODE',all.x=T)
 data = final 
 data$dx_str = paste(data$diagnosis,data$icd9_dsc,sep=':')
-data$dx_str= strtrim(data$dx_str,rep(26,length(data$dx_str)))
+data$dx_str= strtrim(data$dx_str,rep(30,length(data$dx_str)))
 
 
 df_p = data[,c('dx_str','pval_12','pval_13','pval_14','pval_15','pval_16','pval_17','pval_18')]
