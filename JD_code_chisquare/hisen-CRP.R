@@ -1,20 +1,19 @@
 library(gtools)
-library(gtools)
 library(ggplot2)
 library(knitr)
 library(reshape2)
 library(gridExtra)
-setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/')
-x=read.csv('./diangosis-esr-peak.csv')
-x=x[,-c(1,ncol(x))]
+setwd('P:/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
+x=read.csv('./diagnosis-hisencrp_pk.csv',header=0, fileEncoding="UTF-8-BOM")
 
-colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
+colnames(x) = c('mrd_pt_id','event_cd','vocabulary_val','result_val_num','unit','event_start_dt_tm','diagnosis_dt')
 x$vocabulary_val = as.character(x$vocabulary_val)
+x[x$unit=='mg/L','result_val_num'] = x[x$unit=='mg/L','result_val_num']*10
 #0-22 is normal for man, 0-29 is normal range for women. 
-x$val_disc = as.numeric(cut(x$result_val_num, c(-1,30,50,90,130,max(x$result_val_num))))
-colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
-x$vocabulary_val = as.character(x$vocabulary_val)
-#0-22 is normal for man, 0-29 is normal range for women. 
+x$val_disc = as.numeric(cut(x$result_val_num, c(-1,3,5,10,20,30,50,100, max(x$result_val_num))))
+
+
+#read phewas
 phewas = read.csv('/Volumes/fsmhome/projects/ICD-2-phewas.csv')
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
@@ -96,7 +95,9 @@ for (voca in dx_list2)
   print(i)
 }
 
-
+##########result file############################result file############################result file##################
+##########result file############################result file############################result file##################
+##########result file############################result file############################result file##################
 dict1 = dict[!duplicated(dict$JD_CODE),]
 dict1 = dict[dict1$JD_CODE!='',]
 colnames(dict1)[ncol(dict1)]='icd9_dsc'
