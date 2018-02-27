@@ -3,7 +3,7 @@ library(ggplot2)
 library(knitr)
 library(reshape2)
 library(gridExtra)
-setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/hisensitivity c-reactive protein/data/')
+setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/')
 x=read.csv('./diangosis-esr-peak.csv')
 x=x[,-c(1,ncol(x))]
 
