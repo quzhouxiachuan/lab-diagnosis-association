@@ -49,7 +49,7 @@ for (voca in dx_list)
   i = i + 1 
   print(i)
 }
-
+setwd('P:/projects/new_dataset_peakval_only/ESR/data/')
 result = read.csv('../result/ESR_chisquare_result_updated.csv')
 result = result[,-1]
 dict = read.csv('P:/projects/new_dataset_peakval_only/ESR/data/icd_ESR-peak_0216-after.csv',sep = '|',header= 0,fileEncoding="UTF-8-BOM")
