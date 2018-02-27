@@ -36,7 +36,7 @@ xx= x[,c('mrd_pt_id','vocabulary_val','label')]
 library(tidyr)
 test = spread(xx, key = vocabulary_val, value = label)
 test1 = merge(test, x, by= 'mrd_pt_id',all.x=T)
-test1 = test1[,-c('event_dsc','event_start_dt_tm','vocabulary_val','diagnosis_dt','val_disc','label')]
+test1 = subset(test1, select = -c(event_dsc,event_start_dt_tm,vocabulary_val,diagnosis_dt,val_disc,label))
 test1 = test1[!duplicated(test1$mrd_pt_id),]
 test1[is.na(test1)] <- 0
 
