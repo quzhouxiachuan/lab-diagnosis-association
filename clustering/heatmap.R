@@ -1,4 +1,4 @@
- setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/'
+ setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/')
  result = read.csv('../result/ESR_chisquare_result_updated.csv')
  result = result[,-1]
  dict = read.csv('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/icd_ESR-peak_0216-after.csv',sep = '|',header= 0,fileEncoding="UTF-8-BOM")
