@@ -1,3 +1,4 @@
+ library(reshape2)
  setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/')
  result = read.csv('../result/ESR_chisquare_result_updated.csv')
  result = result[,-1]
