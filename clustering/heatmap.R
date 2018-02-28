@@ -108,7 +108,11 @@ heatmap(test1[cutree(hc.rows,k=2)==1,], Colv=as.dendrogram(hc.cols), scale='none
 # draw heatmap for second cluster
 heatmap(mtscaled[cutree(hc.rows,k=2)==2,], Colv=as.dendrogram(hc.cols), scale='none')
 
+##link to pam clustering: 
 
+#https://www.r-bloggers.com/the-ultimate-guide-to-partitioning-clustering/
+#https://www.r-bloggers.com/clustering-mixed-data-types-in-r/
+#http://www.sthda.com/english/articles/27-partitioning-clustering-essentials/88-k-medoids-essentials/
 
 
 
