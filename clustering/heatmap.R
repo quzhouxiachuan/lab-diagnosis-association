@@ -42,6 +42,76 @@ test1 = subset(test1, select = -c(event_dsc,event_start_dt_tm,vocabulary_val,dia
 test1 = test1[!duplicated(test1$mrd_pt_id),]
 test1[is.na(test1)] <- 0
 
+######PAM clustering and visualizatoin ##########
+
+gower_dist <- daisy(test1[, -1],
+                    metric = "gower",
+                    type = list(logratio = 62))
+
+sil_width <- c(NA)
+
+for(i in 2:10){
+  
+  pam_fit <- pam(gower_dist,
+                 diss = TRUE,
+                 k = i)
+  
+  sil_width[i] <- pam_fit$silinfo$avg.width
+  
+}
+
+# Plot sihouette width (higher is better)
+
+plot(1:10, sil_width,
+     xlab = "Number of clusters",
+     ylab = "Silhouette Width")
+lines(1:10, sil_width)
+
+pam_fit <- pam(gower_dist, diss = TRUE, k = 9)
+
+dd <- cbind(test1, cluster = pam_fit$cluster)
+
+pam_results <- test1 %>%
+  dplyr::select(-mrd_pt_id) %>%
+  mutate(cluster = pam_fit$clustering) %>%
+  group_by(cluster) %>%
+  do(the_summary = summary(.))
+
+
+
+tsne_obj <- Rtsne(gower_dist, is_distance = TRUE)
+tsne_data <- tsne_obj$Y %>%
+  data.frame() %>%
+  setNames(c("X", "Y")) %>%
+  mutate(cluster = factor(pam_fit$clustering),
+         name = test1$mrd_pt_id)
+
+ggplot(aes(x = X, y = Y), data = tsne_data) +
+  geom_point(aes(color = cluster))
+
+test1_s = test1
+
+gower_dist_s <- daisy(test1_s[, -1],
+                    metric = "gower",
+                    type = list(logratio =62 ))
+hc.rows <- hclust(gower_dist)
+plot(hc.rows)
+# transpose the matrix and cluster columns
+gower_dist_t <- daisy(t(test1[, -1]),
+                    metric = "gower",
+                    type = list(logratio = 571))
+hc.cols <- hclust(gower_dist_t)
+
+# draw heatmap for first cluster
+heatmap(test1[cutree(hc.rows,k=2)==1,], Colv=as.dendrogram(hc.cols), scale='none')
+
+# draw heatmap for second cluster
+heatmap(mtscaled[cutree(hc.rows,k=2)==2,], Colv=as.dendrogram(hc.cols), scale='none')
+
+
+
+
+
 
 
 
