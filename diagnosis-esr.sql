@@ -92,3 +92,15 @@ into #final_tb
 from #final where rk = 1 
 
 select * from #final_tb 
+
+-- select patient demographic information 
+
+select final.mrd_pt_id, birth_dts, patient_race_mrd_id, patient_gender_mrd_id 
+from  [EDW_IDS].[edw_ids_ir_dm].[patients] pt  
+right join #final_tb final on pt.mrd_pt_id = final.mrd_pt_id  
+where active_ind = 1 
+
+
+
+
+
