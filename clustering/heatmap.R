@@ -78,8 +78,7 @@ pam_results <- test1 %>%
   group_by(cluster) %>%
   do(the_summary = summary(.))
 
-
-
+############################# 2-D plot ################################################
 tsne_obj <- Rtsne(gower_dist, is_distance = TRUE)
 tsne_data <- tsne_obj$Y %>%
   data.frame() %>%
@@ -89,6 +88,32 @@ tsne_data <- tsne_obj$Y %>%
 
 ggplot(aes(x = X, y = Y), data = tsne_data) +
   geom_point(aes(color = cluster))
+
+################## 3D plot ############################################################ 
+tsne_obj <- Rtsne(gower_dist, is_distance = TRUE, dims= 3)
+tsne_data <- tsne_obj$Y %>%
+  data.frame() %>%
+  setNames(c("X", "Y",'Z')) %>%
+  mutate(cluster = factor(pam_fit$clustering),
+         name = test1$mrd_pt_id)
+library(scatterplot3d)
+scatterplot3d(x=tsne_data[,1],y=tsne_data[,2],z=tsne_data[,3],
+              color = c("red","green","blue")[tsne_data$cluster])
+library(rgl)
+plot3d(x=tsne_data[,1],y=tsne_data[,2],z=tsne_data[,3],
+       col=c("red","green","blue")[tsne_data$cluster],
+       type="s",radius=0.5)
+
+
+
+
+
+
+
+
+
+
+
 
 test1_s = test1
 
