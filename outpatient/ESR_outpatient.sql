@@ -25,3 +25,4 @@ and pro.ORDER_STATUS_C is not null
 and pro.IS_PENDING_ORD_YN = 'N' 
 and res.ORD_VALUE is not null 
 
+
