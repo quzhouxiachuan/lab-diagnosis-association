@@ -10,6 +10,8 @@
 --RETIC                           	SEDIMENTATION RATE
 --SGOT	                          SEDIMENTATION RATE
 
+
+
 select -- distinct com.ABBREVIATION,com.EXTERNAL_NAME,BASE_NAME, DESCRIPTION, PROC_CODE    
 pro.PAT_ID, pro.ORDER_PROC_ID,  PROC_ID,  DESCRIPTION, com.COMPONENT_ID, com.NAME, com.EXTERNAL_NAME, com.BASE_NAME, res.ORD_NUM_VALUE, res.REFERENCE_UNIT, res.RESULT_DATE , ORDERING_DATE 
 into #ESR
@@ -24,5 +26,23 @@ and pro.ORDER_STATUS_C not in (4, 7)
 and pro.ORDER_STATUS_C is not null 
 and pro.IS_PENDING_ORD_YN = 'N' 
 and res.ORD_VALUE is not null 
+
+
+-- select max(ORD_NUM_VALUE)   from #ESR
+  
+
+
+
+select *, ROW_NUMBER() over (partition by pat_id order by ORD_NUM_VALUE desc) as rk 
+into #ESR_rk 
+from #ESR
+where (ORD_NUM_VALUE is not null)  and (REFERENCE_UNIT is not null) 
+
+select  *
+into #ESR_pk 
+from #ESR_rk 
+where rk = 1 
+
+select * from #ESR_pk 
 
 
