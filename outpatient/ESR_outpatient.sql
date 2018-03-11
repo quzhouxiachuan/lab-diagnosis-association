@@ -44,5 +44,28 @@ from #ESR_rk
 where rk = 1 
 
 select * from #ESR_pk 
+--------------------------------------- ESR Peak value table above --------------------------------------------
+---------------------------------------ESR peak value table above ---------------------------------------------
+--------------------------------------ESR peak value table above ---------------------------------------------
+
+--------------get diagnosis table ready -------------------------------------
+-------------get diagnosis table ready --------------------------------------
+select mrd_pt_id, d.diagnosis, d.vocabulary_value, d.diagnosis_dts 
+into #diagnoses 
+from edw_ids.edw_ids_cr_dm.diagnoses d
+inner join [EDW_IDS].[edw_ids_ir_dm].[patients] p on d.patient_ir_id = p.patient_ir_id
+where mrd_pt_id  is not NULL   -- for some patients, with patient_ir_id, they dont have mrd_pt_id? 
+and d.src_vocabulary = 'ICD9'  -- for some dignosis, snomed code is used 
+and vocabulary_value is not null 
+
+------- link to mrd_pt_id by using  nmff_epic_ods.patient table ---------------------
+---------------------get ESR pk table ready -----------------------------------------
+select pt.mrd_pt_id, esr.* 
+from #ESR_pk esr
+join nmff_epic_ods.patient pt
+on esr.PAT_ID = pt.PAT_ID
+where mrd_pt_id is not NULL  
+
+
 
 
