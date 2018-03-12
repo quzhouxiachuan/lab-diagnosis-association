@@ -1,11 +1,15 @@
-cut -f 15 ESR_diagnoses_outpatient03112018.txt > file1
+#first, save your EDW output as .txt file
+
+#get the diagnosis list and delete all , and other special symbols 
+cut -f 5 ESR_diangosis_outpatient03122018.txt > file1
 sed -i -e 's/\,//g' -e "s/'//g" -e 's/\#//g'  -e 's/\"//g' -e 's/\///g' -e 's/\\//g' -e 's/\|//g' file1
-sed -e 's/[ \t]*//' file1 > file3
+sed -i -e 's/[ \t]*//' file1 
 
+#get the columns other than diagnosis. 
+cut -f 1,2,3,4,6,7 ESR_diangosis_outpatient03122018.txt > file2 
+sed -i -e 's/\,//g' -e "s/'//g" -e 's/\#//g'  -e 's/\"//g' -e 's/\///g' -e 's/\\//g' -e 's/\|//g' file2
+sed -i -e 's/\t/,/g' file2
 
-
-cut -f 1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20 ESR_diagnoses_outpatient03112018.txt > file2 
- sed 's/\t/,/g' file2> file21
-
-paste -d"\t" file2 file3 > ESR_diagnoses_outpatient03112018_icd.txt
-tr -d '\b\r' < ESR_diagnoses_outpatient03112018_icd.txt > ESR_diagnoses_outpatient03112018_icd2.txt
+paste -d"," file1 file2 > ESR_diangosis_outpatient03122018.csv
+#delete ^M symbol 
+tr -d '\b\r' < ESR_diangosis_outpatient03122018.csv > ESR_diangosis_outpatient03122018_icd.csv
