@@ -35,31 +35,31 @@ x9= xx[xx$val_disc==9,]
 # [0,50]
 freq1 = as.data.frame(table(x1$icd9_dsc))
 freq1 = with(freq1, freq1[order(Freq,decreasing=T),])
-freq1[1:40,]
+freq1[1:60,]
 #(50,90] 
 freq2 = as.data.frame(table(x2$icd9_dsc))
 freq2 =with(freq2, freq2[order(Freq,decreasing=T),])
-freq2[1:40,]
+freq2[1:60,]
 #(90,100]
 freq3 = as.data.frame(table(x3$icd9_dsc))
 freq3 = with(freq3, freq3[order(Freq,decreasing=T),])
-freq3[1:40,]
+freq3[1:60,]
 #(100,120]
 freq4 = as.data.frame(table(x4$icd9_dsc))
 freq4 = with(freq4, freq4[order(Freq,decreasing=T),])
-freq4[1:40,]
+freq4[1:60,]
 #(120,130]
 freq5 = as.data.frame(table(x5$icd9_dsc))
 freq5 = with(freq5, freq5[order(Freq,decreasing=T),])
-freq5[1:40,]
+freq5[1:60,]
 #(130,145]
 freq6 = as.data.frame(table(x6$icd9_dsc))
 freq6 = with(freq6, freq6[order(Freq,decreasing=T),])
-freq6[1:40,]
+freq6[1:60,]
 #(145,180]
 freq7 = as.data.frame(table(x7$icd9_dsc))
 freq7 = with(freq7, freq7[order(Freq,decreasing=T),])
-freq7[1:40,]
+freq7[1:60,]
 #(180,200]
 freq8 = as.data.frame(table(x8$icd9_dsc))
 freq8 = with(freq8, freq8[order(Freq,decreasing=T),])
