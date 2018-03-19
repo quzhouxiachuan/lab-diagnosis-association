@@ -10,6 +10,6 @@ cut -f 1,2,3,4,6,7 ESR_diangosis_outpatient03122018.txt > file2
 sed -i -e 's/\,//g' -e "s/'//g" -e 's/\#//g'  -e 's/\"//g' -e 's/\///g' -e 's/\\//g' -e 's/\|//g' file2
 sed -i -e 's/\t/,/g' file2
 
-paste -d"," file1 file2 > ESR_diangosis_outpatient03122018.csv
+paste -d"," file2 file1 > ESR_diangosis_outpatient03122018.csv
 #delete ^M symbol 
 tr -d '\b\r' < ESR_diangosis_outpatient03122018.csv > ESR_diangosis_outpatient03122018_icd.csv
