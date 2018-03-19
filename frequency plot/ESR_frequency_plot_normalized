@@ -7,8 +7,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r}
-setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/outpatient/')
-x=read.csv('./ESR_diangosis_outpatient03122018_icd.csv',header=0)
+setwd('C:/Users/ydw529/Documents/SQL Server Management Studio/Projects')
+x=read.csv('./ESR_diangosis_outpatient_7daysdiff_03192018_icd.csv',header=0, fileEncoding="UTF-8-BOM")
 colnames(x) = c('mrd_pt_id','base_nm','result_val_num','result_dt', 'vocabulary_val','diagnosis_dt','icd9_dsc' )
 df = subset(x, select = c(mrd_pt_id,result_val_num,vocabulary_val,icd9_dsc))
 
