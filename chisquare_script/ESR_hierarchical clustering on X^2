@@ -3,14 +3,16 @@ library(ggplot2)
 library(knitr)
 library(reshape2)
 library(gridExtra)
-setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data/')
-x=read.csv('./diangosis-esr-peak.csv')
+setwd('/Volumes/fsmhome/projects/new_dataset_peakval_only/ESR/data')
+x=read.csv('pkESR_diagnosis_validation_03082018.csv')
 x=x[,-c(1,ncol(x))]
 
 colnames(x) = c('mrd_pt_id','event_dsc','result_val_num','vocabulary_val','event_start_dt_tm','diagnosis_dt')
 x$vocabulary_val = as.character(x$vocabulary_val)
 #0-22 is normal for man, 0-29 is normal range for women. 
-x$val_disc = as.numeric(cut(x$result_val_num, c(-1,30,50,90,130,max(x$result_val_num))))
+x$val_disc = as.numeric(cut(x$result_val_num, c(-1,max(x$result_val_num), by = 10)))
+icd = read.csv('./Volumes/fsmhome/projects/new_dataset_peakval_only/outpatient_diff7days/icd9-longform-shortform.csv')
+x = merge(x, icd, by.x= , by.y= )
 
 freq = as.data.frame(table(x$vocabulary_val))
 #freq=freq[freq$Var1!='*****',]
