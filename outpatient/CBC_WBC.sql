@@ -20,4 +20,10 @@ join #wbc1 wbc on wbc.PAT_ENC_CSN_ID = enc.PAT_ENC_CSN_ID
 join nmff_epic_ods.clarity_edg edg on edg.DX_ID = enc.dx_id 
 
 
+select PAT_ID , wbc.PAT_ENC_CSN_ID , enc.ICD9_CODE , PROC_CODE, DESCRIPTION, ORD_NUM_VALUE , REFERENCE_UNIT, DX_NAME 
+into #final 
+from edw.nmff_epic_ods.pat_enc_dx  enc 
+join #wbc2 wbc on wbc.PAT_ENC_CSN_ID = enc.PAT_ENC_CSN_ID 
+join nmff_epic_ods.clarity_edg edg on edg.DX_ID = enc.dx_id 
+
 
