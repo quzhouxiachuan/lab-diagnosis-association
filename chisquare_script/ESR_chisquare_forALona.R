@@ -36,7 +36,7 @@ for (voca in dx_list)
   df_lab$label[is.na(df_lab$label)] <- 'ctrl'
   tb = table(df_lab$label, df_lab$val_disc) 
 
-    for (k in 2:(length(unique(x$val_disc))-1) )
+    for (k in 2:(length(unique(x$val_disc))) )
   {
     tmp = paste('res1',k,sep='') 
     assign ( tmp, fisher.test(tb[,c(1,k)]))
