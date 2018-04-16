@@ -102,40 +102,6 @@ p2=ggplot(dd_plot1[1:300,], aes(x = variable, y = as.factor(dx_str),color=as.fac
 p3=ggplot(dd_plot[300:600,], aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(0.5, 3))
 p4=ggplot(dd_plot1[300:600,], aes(x = variable, y = as.factor(dx_str),color=as.factor(indictor))) + geom_point(aes(size = (as.numeric(1/OddsRatio)))) + scale_size_continuous(range = c(0.5, 3))
 
-##arrange p1 and p2 and p3 and p4 
-grid.arrange(p1, p2, p3, p4, nrow = 2)
-
-
-
-
-
-
-
-
-  plot1 = ggplot(dd_plot[1:300,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot2 = ggplot(dd_plot[300:600,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot3 = ggplot(dd_plot[600:900,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot4 = ggplot(dd_plot[900:1200,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot5 = ggplot(dd_plot[1200:1500,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot6 = ggplot(dd_plot[1500:1800,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot7 = ggplot(dd_plot[1800:2100,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot8 = ggplot(dd_plot[2100:2400,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot9 = ggplot(dd_plot[2400:2700,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot10 = ggplot(dd_plot[2700:3000,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot11= ggplot(dd_plot[3000:3300,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot12 = ggplot(dd_plot[3300:3600,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot13 = ggplot(dd_plot[3600:3900,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot14 = ggplot(dd_plot[3900:4200,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot15 = ggplot(dd_plot[4200:4500,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot16 = ggplot(dd_plot[4500:4800,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot17 = ggplot(dd_plot[4800:5100,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot18 = ggplot(dd_plot[5100:5400,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot19= ggplot(dd_plot[5400:5700,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot20 = ggplot(dd_plot[5700:6000,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  plot21 = ggplot(dd_plot[6000:6300,], aes(x = variable, y = as.factor(dx_str))) + geom_point(aes(size = as.numeric(OddsRatio))) + scale_size_continuous(range = c(0.5, 2.5))
-  
-
-
 
 
   
