@@ -15,6 +15,7 @@ where (event_dsc like '%sedimentation%rate%'
 		and mrd_pt_id is not NULL 
 		and result_val_num is not NULL 
 		and valid_until_dt_tm > GETDATE()
+		and date??????????
 --select top 10 result_units_dsc from   nmh_cerner_dm.lab_result lab 
 --select count(*) from   #table
 
